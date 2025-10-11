@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MUnder.Models;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace MUnder.Data
 {
@@ -11,11 +9,11 @@ namespace MUnder.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-        public DbSet<Song> Songs { get; set; }
-        public DbSet<Album> Albums { get; set; }
-        public DbSet<Playlist> Playlists { get; set; }
-        public DbSet<PlaylistSong> PlaylistSongs { get; set; }
-        public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<Song> Songs { get; set; } = null!;
+        public DbSet<Album> Albums { get; set; } = null!;
+        public DbSet<Playlist> Playlists { get; set; } = null!;
+        public DbSet<PlaylistSong> PlaylistSongs { get; set; } = null!;
+        public DbSet<Favorite> Favorites { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

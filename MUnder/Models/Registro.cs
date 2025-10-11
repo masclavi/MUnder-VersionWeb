@@ -12,6 +12,6 @@ namespace MUnder.Models
         [EmailAddress]
         public string Email { get; set; }
         [Phone]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
     }
 }

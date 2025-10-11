@@ -1,26 +1,25 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MUnder.Data;
 using MUnder.Models;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
-// DbContext: usar SQLite, SQLServer, o LocalDB. Ejemplo SQLite:
+// Configuración de DbContext con SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity
+// Configuración de Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
-    // ajustar políticas si se desea
+    // aquí podés ajustar políticas de contraseña, bloqueo, etc.
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddRazorPages();
 
@@ -32,7 +31,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseStaticFiles(); // importante para wwwroot/audio, images
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
