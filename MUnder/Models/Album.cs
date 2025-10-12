@@ -7,10 +7,10 @@ namespace MUnder.Models
     {
         public int Id { get; set; }
         [Required]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         public string CoverPath { get; set; }
 
-        public ICollection<Song> Songs { get; set; }
+        public ICollection<Song>? Songs { get; set; }
     }
 }

@@ -1,20 +1,28 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MUnder.Data;
 using MUnder.Models;
+<<<<<<< HEAD
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
+=======
+using Microsoft.AspNetCore.Identity;
+
+>>>>>>> 25a9ac242342f34a08c853dcdb8c0185c19725e6
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
+<<<<<<< HEAD
 // DbContext
+=======
+// Configuración de DbContext con SQLite
+>>>>>>> 25a9ac242342f34a08c853dcdb8c0185c19725e6
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+<<<<<<< HEAD
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -45,6 +53,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
+=======
+// Configuración de Identity
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    // aquí podés ajustar políticas de contraseña, bloqueo, etc.
+})
+.AddEntityFrameworkStores<ApplicationDbContext>();
+>>>>>>> 25a9ac242342f34a08c853dcdb8c0185c19725e6
 
 builder.Services.AddRazorPages();
 
@@ -56,9 +73,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+<<<<<<< HEAD
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+=======
+app.UseStaticFiles();
+>>>>>>> 25a9ac242342f34a08c853dcdb8c0185c19725e6
 app.UseRouting();
 
 // IMPORTANTE: El orden es crítico
