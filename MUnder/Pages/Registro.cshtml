@@ -1,0 +1,163 @@
+﻿@page
+@model MUnder.Pages.RegistroModel
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            background-color: #1E1B26;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .registro-container {
+            background-color: #1E1B26;
+            padding: 40px;
+            border-radius: 10px;
+            width: 500px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #9370DB;
+            font-size: 1.8em;
+            margin: 0 10px 0 0;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input::placeholder {
+            color: #888;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+            .btn:hover {
+                opacity: 0.8;
+            }
+
+        .btn-primary {
+            background-color: #4B0082;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #F5F5F5;
+            color: black;
+        }
+
+        .error-message {
+            background-color: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="registro-container">
+        <div class="header">
+            <h1>Registrarse en</h1>
+            <img src="~/images/logo.png" alt="MUnder Logo" class="logo" onerror="this.style.display='none'" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label for="Nombre">Nombre</label>
+                <input type="text" id="Nombre" name="Nombre" placeholder="Tu nombre completo" required />
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" id="Email" name="Email" placeholder="tumail@gmail.com" required />
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Contraseña</label>
+                <input type="password" id="Password" name="Password" placeholder="******" required />
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono">Teléfono</label>
+                <input type="tel" id="Telefono" name="Telefono" placeholder="+54 1234-5678" />
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Registrarse</button>
+                <a href="/Login" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: center;">Volver</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

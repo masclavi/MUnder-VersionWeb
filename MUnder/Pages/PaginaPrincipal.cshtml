@@ -1,0 +1,170 @@
+﻿@page
+@model MUnder.Pages.PaginaPrincipalModel
+@{
+    ViewData["Title"] = "MUnder - Inicio";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            background-color: #1E1B26;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        .navbar {
+            background-color: #2D2838;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .navbar-brand h1 {
+                color: #9370DB;
+                margin: 0;
+                font-size: 1.8em;
+            }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .welcome-text {
+            font-size: 1.1em;
+        }
+
+        .btn-logout {
+            background-color: #DC143C;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+            .btn-logout:hover {
+                opacity: 0.8;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #4B0082 0%, #9370DB 100%);
+            padding: 60px 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+            .welcome-section h2 {
+                font-size: 2.5em;
+                margin: 0 0 20px 0;
+            }
+
+            .welcome-section p {
+                font-size: 1.3em;
+                opacity: 0.9;
+            }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background-color: #2D2838;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 20px rgba(147, 112, 219, 0.3);
+            }
+
+            .feature-card h3 {
+                color: #9370DB;
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .feature-card p {
+                opacity: 0.8;
+                line-height: 1.6;
+            }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="~/images/logo.png" alt="MUnder Logo" class="logo" onerror="this.style.display='none'" />
+            <h1>MUnder</h1>
+        </div>
+        <div class="user-info">
+            <span class="welcome-text">¡Bienvenido, @Model.UserName!</span>
+            <form method="post">
+                <button type="submit" class="btn-logout">Cerrar Sesión</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <div class="welcome-section">
+            <h2>¡Bienvenido a MUnder!</h2>
+            <p>Tu plataforma de música favorita</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>🎵 Mis Playlists</h3>
+                <p>Crea y administra tus playlists personalizadas con tus canciones favoritas</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🎧 Explorar Música</h3>
+                <p>Descubre nueva música y artistas que se adapten a tus gustos</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>❤️ Favoritos</h3>
+                <p>Guarda tus canciones favoritas para escucharlas cuando quieras</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
