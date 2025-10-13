@@ -1,4 +1,102 @@
-﻿@page
+﻿@page "{id:int}"
 @model MUnder.Pages.Songs.DetailsModel
 @{
+    ViewData["Title"] = $"Canción: {Model.Song.Title}";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .btn-back {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .song-detail {
+            background-color: #2D2838;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .cover {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .title {
+            color: #9370DB;
+            font-size: 1.8em;
+            margin: 0 0 10px 0;
+        }
+
+        .artist {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .youtube-player {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/Songs" class="btn-back">Volver a Explorar</a>
+
+        <div class="song-detail">
+            <img src="@Model.Song.CoverPath" class="cover" onerror="this.src='/Imagenes/default-cover.png'" />
+            <h2 class="title">@Model.Song.Title</h2>
+            <p class="artist">@Model.Song.Artist</p>
+            <iframe class="youtube-player"
+                    src="@GetEmbedUrl(Model.Song.YouTubeUrl)"
+                    frameborder="0"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</body>
+</html>
+
+@functions {
+    public string GetEmbedUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return "";
+        var id = url.Contains("youtu.be/")
+            ? url.Split('/').Last().Split('?')[0]
+            : System.Text.RegularExpressions.Regex.Match(url, @"v=([^&]+)").Groups[1].Value;
+        return $"https://www.youtube.com/embed/{id}";
+    }
 }

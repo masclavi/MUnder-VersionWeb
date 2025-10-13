@@ -1,4 +1,217 @@
 ﻿@page
 @model MUnder.Pages.Songs.IndexModel
 @{
+    ViewData["Title"] = "Explorar Música";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+            .search-box input {
+                width: 100%;
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid #555;
+                background-color: white;
+                color: black;
+            }
+
+        .btn-create {
+            background-color: #9370DB;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .btn-home {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .song-card {
+            background-color: #2D2838;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 5px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .song-info {
+            flex: 1;
+        }
+
+        .song-title {
+            color: #9370DB;
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .song-artist {
+            opacity: 0.8;
+            margin: 5px 0;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-fav, .btn-add {
+            background-color: #DC143C;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background-color: #4682B4;
+        }
+
+        select {
+            background-color: #2D2838;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 0 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: #2D2838;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>🎧 Explorar Música</h2>
+            <div class="search-box">
+                <form method="get">
+                    <input type="text" name="SearchTerm" value="@Model.SearchTerm" placeholder="Buscar por título o artista..." />
+                </form>
+            </div>
+            <div>
+                <a href="/Songs/Create" class="btn-create">+ Nueva Canción</a>
+                <a href="/PaginaPrincipal" class="btn-home">Inicio</a>
+            </div>
+        </div>
+
+        @if (Model.Songs.Any())
+        {
+            @foreach (var song in Model.Songs)
+            {
+                <div class="song-card">
+                    <img src="@song.CoverPath" class="cover" onerror="this.src='/Imagenes/default-cover.png'" />
+                    <div class="song-info">
+                        <h3 class="song-title">@song.Title</h3>
+                        <p class="song-artist">@song.Artist</p>
+                        <iframe width="100%"
+                                height="80"
+                                src="@GetEmbedUrl(song.YouTubeUrl)"
+                                frameborder="0"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="actions">
+                        <form method="post" asp-page-handler="AddFavorite" asp-route-songId="@song.Id">
+                            <button type="submit" class="btn-fav">❤️ Favorito</button>
+                        </form>
+
+                        @if (Model.UserPlaylists.Any())
+                        {
+                            <form method="post" asp-page-handler="AddToPlaylist" asp-route-songId="@song.Id">
+                                <select name="playlistId">
+                                    <option value="">Agregar a...</option>
+                                    @foreach (var playlist in Model.UserPlaylists)
+                                    {
+                                        <option value="@playlist.Id">@playlist.Name</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn-add">+</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span style="color: #aaa; font-size: 0.9em;">Crea una playlist primero</span>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <p>No se encontraron canciones. ¡Agrega tu primera canción desde YouTube!</p>
+            </div>
+        }
+    </div>
+</body>
+</html>
+
+@functions {
+    public string GetEmbedUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return "";
+        var id = url.Contains("youtu.be/")
+            ? url.Split('/').Last().Split('?')[0]
+            : System.Text.RegularExpressions.Regex.Match(url, @"v=([^&]+)").Groups[1].Value;
+        return $"https://www.youtube.com/embed/{id}";
+    }
 }

@@ -1,4 +1,107 @@
-﻿@page
+﻿@page "{id:int}"
 @model MUnder.Pages.Songs.EditModel
 @{
+    ViewData["Title"] = "Editar Canción";
 }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Mismo estilo que Create.cshtml */
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: white;
+            color: black;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #9370DB;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: #555;
+            margin-left: 10px;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Editar Canción</h2>
+
+        <form method="post">
+            <input type="hidden" asp-for="Song.Id" />
+            <div class="form-group">
+                <label asp-for="Song.Title"></label>
+                <input asp-for="Song.Title" />
+                <span asp-validation-for="Song.Title" style="color: #DC143C;"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Song.Artist"></label>
+                <input asp-for="Song.Artist" />
+                <span asp-validation-for="Song.Artist" style="color: #DC143C;"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Song.YouTubeUrl">URL de YouTube</label>
+                <input asp-for="Song.YouTubeUrl" />
+                <span asp-validation-for="Song.YouTubeUrl" style="color: #DC143C;"></span>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit">Guardar Cambios</button>
+                <a asp-page="Index" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

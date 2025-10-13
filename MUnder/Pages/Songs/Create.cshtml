@@ -1,4 +1,115 @@
 ﻿@page
 @model MUnder.Pages.Songs.CreateModel
 @{
+    ViewData["Title"] = "Agregar Canción desde YouTube";
 }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: white;
+            color: black;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #9370DB;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: #555;
+            margin-left: 10px;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+
+        .preview {
+            margin-top: 20px;
+            background-color: #2D2838;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Agregar Canción desde YouTube</h2>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="Title">Título *</label>
+                <input asp-for="Title" placeholder="Ej: Never Gonna Give You Up" />
+                <span asp-validation-for="Title" style="color: #DC143C;"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Artist">Artista *</label>
+                <input asp-for="Artist" placeholder="Ej: Rick Astley" />
+                <span asp-validation-for="Artist" style="color: #DC143C;"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="YouTubeUrl">URL de YouTube *</label>
+                <input asp-for="YouTubeUrl" placeholder="https://youtu.be/..." />
+                <span asp-validation-for="YouTubeUrl" style="color: #DC143C;"></span>
+                <p style="font-size: 0.9em; opacity: 0.8; margin-top: 5px;">
+                    Usa la URL corta (youtu.be) o la completa.
+                </p>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit">Agregar Canción</button>
+                <a href="/Songs" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

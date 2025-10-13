@@ -21,8 +21,7 @@ namespace MUnder.Pages.Playlists
         {
             Playlist = await _context.Playlists
                 .Include(p => p.PlaylistSongs)
-                    .ThenInclude(ps => ps.Song)
-                        .ThenInclude(s => s.Album)
+                    .ThenInclude(ps => ps.Song) // Carga la canción completa
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (Playlist == null)

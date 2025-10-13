@@ -9,18 +9,23 @@ namespace MUnder.Models
         public int Id { get; set; }
 
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
-        public string FilePath { get; set; }      // ruta en wwwroot/audio/...
-        public string CoverPath { get; set; }     // portada en wwwroot/images/...
+        [Required]
+        public string Artist { get; set; } = string.Empty; 
+
+        [Required]
+        public string YouTubeUrl { get; set; } = string.Empty;  
+
+        public string CoverPath { get; set; } = "/Imagenes/default-cover.png"; 
 
         public TimeSpan? Duration { get; set; }
 
-        // Relaciones opcionales
+        // Relaciones
         public int? AlbumId { get; set; }
-        public Album Album { get; set; }
+        public Album? Album { get; set; } = null!;
 
-        public ICollection<PlaylistSong> PlaylistSongs { get; set; }
-        public ICollection<Favorite> Favorites { get; set; }
+        public ICollection<PlaylistSong> PlaylistSongs { get; set; } = new List<PlaylistSong>();
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     }
 }
