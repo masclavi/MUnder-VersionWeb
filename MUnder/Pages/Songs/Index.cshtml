@@ -171,14 +171,14 @@
                     </div>
                     <div class="actions">
                         <form method="post" asp-page-handler="AddFavorite" asp-route-songId="@song.Id">
-                            <button type="submit" class="btn-fav">❤️ Favorito</button>
+                            <button type="submit" class="btn-fav">❤️</button>
                         </form>
 
                         @if (Model.UserPlaylists.Any())
                         {
                             <form method="post" asp-page-handler="AddToPlaylist" asp-route-songId="@song.Id">
                                 <select name="playlistId">
-                                    <option value="">Agregar a...</option>
+                                    <option value="">Playlist...</option>
                                     @foreach (var playlist in Model.UserPlaylists)
                                     {
                                         <option value="@playlist.Id">@playlist.Name</option>
@@ -187,10 +187,13 @@
                                 <button type="submit" class="btn-add">+</button>
                             </form>
                         }
-                        else
-                        {
-                            <span style="color: #aaa; font-size: 0.9em;">Crea una playlist primero</span>
-                        }
+
+                        <!-- Botones de Editar y Eliminar -->
+                        <a asp-page="Edit" asp-route-id="@song.Id"
+                           style="background-color: #FFD700; color: black; padding: 6px 10px; border-radius: 4px; text-decoration: none; margin-left: 8px; font-weight: bold;">Editar</a>
+
+                        <a asp-page="Delete" asp-route-id="@song.Id"
+                           style="background-color: #DC143C; color: white; padding: 6px 10px; border-radius: 4px; text-decoration: none; margin-left: 8px; font-weight: bold;">Eliminar</a>
                     </div>
                 </div>
             }
