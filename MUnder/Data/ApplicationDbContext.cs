@@ -7,8 +7,11 @@ namespace MUnder.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) { }
+            : base(options)
+        {
+        }
 
+        // DbSets para tus entidades
         public DbSet<Song> Songs { get; set; } = null!;
         public DbSet<Album> Albums { get; set; } = null!;
         public DbSet<Playlist> Playlists { get; set; } = null!;
@@ -19,33 +22,44 @@ namespace MUnder.Data
         {
             base.OnModelCreating(builder);
 
-            // PK compuesta PlaylistSong
+            // === Relación PlaylistSong (muchos a muchos entre Playlist y Song) ===
             builder.Entity<PlaylistSong>()
                 .HasKey(ps => new { ps.PlaylistId, ps.SongId });
 
             builder.Entity<PlaylistSong>()
                 .HasOne(ps => ps.Playlist)
                 .WithMany(p => p.PlaylistSongs)
-                .HasForeignKey(ps => ps.PlaylistId);
+                .HasForeignKey(ps => ps.PlaylistId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<PlaylistSong>()
                 .HasOne(ps => ps.Song)
                 .WithMany(s => s.PlaylistSongs)
-                .HasForeignKey(ps => ps.SongId);
+                .HasForeignKey(ps => ps.SongId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // PK compuesta Favorite
+            // === Relación Favorite (muchos a muchos entre User y Song) ===
             builder.Entity<Favorite>()
                 .HasKey(f => new { f.UserId, f.SongId });
 
             builder.Entity<Favorite>()
                 .HasOne(f => f.User)
                 .WithMany(u => u.Favorites)
-                .HasForeignKey(f => f.UserId);
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Favorite>()
                 .HasOne(f => f.Song)
                 .WithMany(s => s.Favorites)
-                .HasForeignKey(f => f.SongId);
+                .HasForeignKey(f => f.SongId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // === Relación Playlist -> Owner (ApplicationUser) ===
+            builder.Entity<Playlist>()
+                .HasOne(p => p.Owner)
+                .WithMany(u => u.Playlists)
+                .HasForeignKey(p => p.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

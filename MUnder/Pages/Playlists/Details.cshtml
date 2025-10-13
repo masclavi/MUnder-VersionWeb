@@ -1,0 +1,108 @@
+﻿@page "{id:int}"
+@model MUnder.Pages.Playlists.DetailsModel
+@{
+    ViewData["Title"] = $"Playlist: {Model.Playlist.Name}";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .playlist-header {
+            background-color: #2D2838;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .playlist-name {
+            color: #9370DB;
+            font-size: 1.5em;
+            margin: 0 0 10px 0;
+        }
+
+        .playlist-desc {
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .btn-back {
+            background-color: #555;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .song-list {
+            background-color: #2D2838;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .song-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        .song-title {
+            color: #9370DB;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/Playlists" class="btn-back">← Volver a Mis Playlists</a>
+
+        <div class="playlist-header">
+            <h2 class="playlist-name">@Model.Playlist.Name</h2>
+            <p class="playlist-desc">@Model.Playlist.Description</p>
+            <p>Canciones: @(Model.Playlist.PlaylistSongs?.Count ?? 0)</p>
+        </div>
+
+        @if (Model.Playlist.PlaylistSongs != null && Model.Playlist.PlaylistSongs.Any())
+        {
+            <div class="song-list">
+                @foreach (var ps in Model.Playlist.PlaylistSongs)
+                {
+                    <div class="song-item">
+                        <div class="song-title">@ps.Song.Title</div>
+                        <div style="opacity: 0.8;">@ps.Song.Album?.Title</div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="song-list">
+                <p>No hay canciones en esta playlist.</p>
+            </div>
+        }
+    </div>
+</body>
+</html>

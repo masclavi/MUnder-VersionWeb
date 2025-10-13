@@ -1,0 +1,99 @@
+﻿@page
+@model MUnder.Pages.Playlists.CreateModel
+@{
+    ViewData["Title"] = "Nueva Playlist";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #1E1B26;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            color: #9370DB;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: white;
+            color: black;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #9370DB;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+            button:hover {
+                opacity: 0.9;
+            }
+
+        .btn-secondary {
+            background-color: #555;
+            margin-left: 10px;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Nueva Playlist</h2>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="Name">Nombre *</label>
+                <input asp-for="Name" />
+                <span asp-validation-for="Name" style="color: #DC143C; font-size: 0.9em;"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Description">Descripción</label>
+                <textarea asp-for="Description" rows="3"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit">Crear Playlist</button>
+                <a asp-page="Index" class="btn-secondary" style="text-decoration: none; padding: 12px 20px; display: inline-block;">Volver</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
