@@ -1,14 +1,14 @@
 ﻿@page
 @model MUnder.Pages.LoginModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Iniciar Sesión";
 }
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - MUnder</title>
     <style>
         body {
             background-color: #1E1B26;
@@ -18,32 +18,44 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
-        .login-container {
-            background-color: #1E1B26;
+        .auth-container {
+            background-color: #2D2838;
             padding: 40px;
-            border-radius: 10px;
-            width: 500px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
             text-align: center;
-        }
-
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #9370DB;
-            font-size: 2em;
-            margin: 0 10px 0 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            /* Aseguramos que esté centrado */
+            margin: 0 auto;
         }
 
         .logo {
             width: 120px;
             height: 120px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            background-color: transparent;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background-color: #ff4444;
+            color: white;
+        }
+
+        .success-message {
+            background-color: #44cc44;
+            color: white;
         }
 
         .form-group {
@@ -55,8 +67,8 @@
             display: block;
             color: white;
             font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-size: 1.05em;
         }
 
         input[type="email"],
@@ -65,18 +77,20 @@
             padding: 12px;
             font-size: 1em;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            background-color: #1E1B26;
+            color: white;
             box-sizing: border-box;
         }
 
         input::placeholder {
-            color: #888;
+            color: #aaa;
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         .btn {
@@ -85,61 +99,48 @@
             font-size: 1.1em;
             font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, transform 0.2s;
         }
 
-        .btn:hover {
-            opacity: 0.8;
-        }
+            .btn:hover {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
 
         .btn-primary {
-            background-color: #4B0082;
+            background-color: #9370DB;
             color: white;
         }
 
         .btn-secondary {
-            background-color: #F5F5F5;
-            color: black;
-        }
-
-        .error-message {
-            background-color: #ff4444;
+            background-color: #4B0082;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
         }
 
-        .success-message {
-            background-color: #44ff44;
-            color: black;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo-container">
-            <h1>Bienvenido a</h1>
-            <img src="~/imagenes/logo.png" alt="MUnder Logo" class="logo" onerror="this.style.display='none'" />
-        </div>
+    <div class="auth-container">
+        <!-- Solo el logo, centrado -->
+        <img src="~/Imagenes/logo.png" alt="MUnder Logo" class="logo" onerror="this.style.display='none'" />
 
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
-            <div class="error-message">
-                @Model.ErrorMessage
-            </div>
+            <div class="message error-message">@Model.ErrorMessage</div>
         }
 
         @if (!string.IsNullOrEmpty(Model.SuccessMessage))
         {
-            <div class="success-message">
-                @Model.SuccessMessage
-            </div>
+            <div class="message success-message">@Model.SuccessMessage</div>
         }
 
         <form method="post">
@@ -149,13 +150,13 @@
             </div>
 
             <div class="form-group">
-                <label for="Password">Clave</label>
+                <label for="Password">Contraseña</label>
                 <input type="password" id="Password" name="Password" placeholder="******" required />
             </div>
 
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                <a href="/Registro" class="btn btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Registrarse</a>
+                <a href="/Registro" class="btn btn-secondary">Registrarse</a>
             </div>
         </form>
     </div>
