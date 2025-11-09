@@ -1,0 +1,100 @@
+﻿@page "{songId:int}"
+@model MUnder.Pages.Reviews.CreateModel
+@{
+    ViewData["Title"] = "Agregar Reseña";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-star-fill"></i> Calificar y Reseñar
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ReviewViewModel.SongTitle))
+                    {
+                        <div class="alert alert-info">
+                            <h5><strong>@Model.ReviewViewModel.SongTitle</strong></h5>
+                            <p class="mb-0">Por: @Model.ReviewViewModel.SongArtist</p>
+                        </div>
+                    }
+
+                    <form method="post">
+                        <input type="hidden" asp-for="ReviewViewModel.SongId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Calificación con estrellas -->
+                        <div class="form-group mb-4">
+                            <label asp-for="ReviewViewModel.Rating" class="form-label"></label>
+                            <div class="star-rating">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    var starId = $"star{i}";
+                                    <input type="radio" id="@starId" name="ReviewViewModel.Rating" value="@i"
+                                           @(Model.ReviewViewModel.Rating == i ? "checked" : "") />
+                                    <label for="@starId" title="@i estrellas">
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                }
+                            </div>
+                            <span asp-validation-for="ReviewViewModel.Rating" class="text-danger"></span>
+                        </div>
+
+                        <!-- Comentario -->
+                        <div class="form-group mb-4">
+                            <label asp-for="ReviewViewModel.Comment" class="form-label"></label>
+                            <textarea asp-for="ReviewViewModel.Comment" class="form-control" rows="5"
+                                      placeholder="Escribe tu opinión sobre esta canción..."></textarea>
+                            <span asp-validation-for="ReviewViewModel.Comment" class="text-danger"></span>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="/Songs/Details" asp-route-id="@Model.ReviewViewModel.SongId"
+                               class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Publicar Reseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            font-size: 2.5rem;
+        }
+
+            .star-rating input {
+                display: none;
+            }
+
+            .star-rating label {
+                color: #ddd;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+
+                .star-rating label:hover,
+                .star-rating label:hover ~ label,
+                .star-rating input:checked ~ label {
+                    color: #ffc107;
+                }
+    </style>
+}

@@ -4,211 +4,202 @@
     ViewData["Title"] = "MUnder - Inicio";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
-    <style>
-        body {
-            background-color: #1E1B26;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: white;
+<!-- Estilos mínimos para el dropdown (puedes moverlos luego a site.css si querés) -->
+<style>
+    .navbar-custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        background: #2D2838;
+        color: white;
+        border-radius: 4px;
+        margin-bottom: 18px;
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .navbar-brand img {
+            width: 46px;
+            height: 46px;
+            border-radius: 6px;
+            object-fit: cover;
         }
 
-        .navbar {
-            background-color: #2D2838;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Dropdown */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropbtn {
+        background-color: transparent;
+        color: white;
+        border: 2px solid #9370DB;
+        padding: 8px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+        .dropbtn:hover {
+            background-color: rgba(147,112,219,0.08);
         }
 
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        background-color: #2D2838;
+        min-width: 200px;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        z-index: 1000;
+        overflow: hidden;
+    }
 
-            .navbar-brand h1 {
-                color: #9370DB;
-                margin: 0;
-                font-size: 1.8em;
-            }
-
-        .logo {
-            width: 50px;
-            height: 50px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .welcome-text {
-            font-size: 1.1em;
-        }
-
-        .btn-logout {
-            background-color: #DC143C;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-            .btn-logout:hover {
-                opacity: 0.8;
-            }
-
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* tarjetas */
-        .feature-card-link {
-            text-decoration: none;
-            color: inherit;
+        .dropdown-content a,
+        .dropdown-content button {
             display: block;
-            height: 100%;
+            padding: 10px 14px;
+            text-decoration: none;
+            color: white;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
         }
 
-        .feature-card {
-            background-color: #2D2838;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            .dropdown-content a:hover,
+            .dropdown-content button:hover {
+                background-color: rgba(147,112,219,0.12);
+            }
+
+    .show {
+        display: block;
+    }
+
+    /* logout button */
+    .btn-logout {
+        background-color: #DC143C;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+        .btn-logout:hover {
+            opacity: 0.95;
         }
+</style>
 
-            .feature-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 20px rgba(147, 112, 219, 0.4);
-            }
-
-            .feature-card h3 {
-                color: #9370DB;
-                font-size: 1.5em;
-                margin-bottom: 15px;
-            }
-
-            .feature-card p {
-                opacity: 0.8;
-                line-height: 1.6;
-            }
-
-        .welcome-section {
-            background: linear-gradient(135deg, #4B0082 0%, #9370DB 100%);
-            padding: 60px 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-            .welcome-section h2 {
-                font-size: 2.5em;
-                margin: 0 0 20px 0;
-            }
-
-            .welcome-section p {
-                font-size: 1.3em;
-                opacity: 0.9;
-            }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .feature-card {
-            background-color: #2D2838;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-            .feature-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 20px rgba(147, 112, 219, 0.3);
-            }
-
-            .feature-card h3 {
-                color: #9370DB;
-                font-size: 1.5em;
-                margin-bottom: 15px;
-            }
-
-            .feature-card p {
-                opacity: 0.8;
-                line-height: 1.6;
-            }
-    </style>
-</head>
-<body>
-    <!-- Barra de navegación -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <img src="~/Imagenes/logo.png" alt="MUnder Logo" class="logo" onerror="this.style.display='none'" />
-            <h1>MUnder</h1>
-        </div>
-        <div class="user-info">
-            <span class="welcome-text">¡Bienvenido, @Model.UserName!</span>
-            <form method="post">
-                <button type="submit" class="btn-logout">Cerrar Sesión</button>
-            </form>
-        </div>
-    </nav>
-
-    <!-- Contenido principal -->
-    <div class="container">
-        <div class="welcome-section">
-            <h2>¡Bienvenido a MUnder!</h2>
-            <p>Tu plataforma de música favorita</p>
-        </div>
-
-        <div class="features">
-            <a href="/Playlists" class="feature-card-link">
-                <div class="feature-card">
-                    <h3>🎵 Mis Playlists</h3>
-                    <p>Crea y administra tus playlists personalizadas con tus canciones favoritas</p>
-                </div>
-            </a>
-
-            <a href="/Songs" class="feature-card-link">
-                <div class="feature-card">
-                    <h3>🎧 Explorar Música</h3>
-                    <p>Descubre nueva música y artistas que se adapten a tus gustos</p>
-                </div>
-            </a>
-
-            <a href="/Favorites" class="feature-card-link">
-                <div class="feature-card">
-                    <h3>❤️ Favoritos</h3>
-                    <p>Guarda tus canciones favoritas para escucharlas cuando quieras</p>
-                </div>
-            </a>
-        </div>
-        </div>
+<!-- NAV -->
+<div class="navbar-custom">
+    <div class="navbar-brand">
+        <img src="~/Imagenes/logo.png" alt="MUnder Logo" onerror="this.style.display='none'" />
+        <h1 style="color:#9370DB; margin:0; font-size:1.1rem;">MUnder</h1>
     </div>
-</body>
-</html>
+
+    <div class="user-info">
+        <!-- Dropdown sobre el nombre -->
+        <div class="dropdown" id="userDropdownContainer">
+            <button type="button" class="dropbtn" id="userDropbtn">
+                @Model.UserName &#x25BE;
+            </button>
+
+            <div class="dropdown-content" id="userDropdown" aria-hidden="true">
+                <!-- Usa tus Razor Pages ya creadas -->
+                <a asp-page="/EditProfile/Index">Ver perfil</a>
+                <a asp-page="/EditProfile/Index">Editar perfil</a>
+                <a asp-page="/EditProfile/ChangePassword">Cambiar contraseña</a>
+            </div>
+        </div>
+
+        <!-- Logout: invoca OnPostLogoutAsync en el PageModel -->
+        <form method="post" asp-page-handler="Logout" style="margin:0;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn-logout">Cerrar Sesión</button>
+        </form>
+    </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+    <div style="background:linear-gradient(135deg,#4B0082 0%,#9370DB 100%); padding:36px; border-radius:10px; color:white; margin-bottom:18px;">
+        <h2 style="margin:0 0 6px 0;">¡Bienvenido a MUnder!</h2>
+        <p style="margin:0; opacity:0.95;">Tu plataforma de música favorita</p>
+    </div>
+
+    <div style="display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+        <a asp-page="/Playlists/Index" style="text-decoration:none;">
+            <div style="background:#2D2838; padding:18px; border-radius:8px;">
+                <h3 style="color:#9370DB; margin:0 0 8px 0;">🎵 Mis Playlists</h3>
+                <p style="margin:0; opacity:0.9;">Crea y administra tus playlists</p>
+            </div>
+        </a>
+
+        <a asp-page="/Songs/Index" style="text-decoration:none;">
+            <div style="background:#2D2838; padding:18px; border-radius:8px;">
+                <h3 style="color:#9370DB; margin:0 0 8px 0;">🎧 Explorar Música</h3>
+                <p style="margin:0; opacity:0.9;">Descubre nueva música</p>
+            </div>
+        </a>
+
+        <a asp-page="/Favorites/Index" style="text-decoration:none;">
+            <div style="background:#2D2838; padding:18px; border-radius:8px;">
+                <h3 style="color:#9370DB; margin:0 0 8px 0;">❤️ Favoritos</h3>
+                <p style="margin:0; opacity:0.9;">Guarda tus canciones favoritas</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const btn = document.getElementById('userDropbtn');
+            const dropdown = document.getElementById('userDropdown');
+            const container = document.getElementById('userDropdownContainer');
+
+            if (!btn || !dropdown || !container) return;
+
+            // Toggle al click en el botón
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+                const visible = dropdown.classList.contains('show');
+                dropdown.setAttribute('aria-hidden', !visible);
+            });
+
+            // Cerrar al click fuera
+            document.addEventListener('click', function (e) {
+                if (!container.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                    dropdown.setAttribute('aria-hidden', 'true');
+                }
+            });
+
+            // Cerrar con ESC
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    dropdown.classList.remove('show');
+                    dropdown.setAttribute('aria-hidden', 'true');
+                }
+            });
+        })();
+    </script>
+}

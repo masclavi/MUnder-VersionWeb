@@ -27,5 +27,7 @@ namespace MUnder.Models
 
         public ICollection<PlaylistSong> PlaylistSongs { get; set; } = new List<PlaylistSong>();
         public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }

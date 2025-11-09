@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -5,13 +8,14 @@ using MUnder.Models;
 
 namespace MUnder.Pages
 {
-    // [Authorize]
+    [Authorize]
     public class PaginaPrincipalModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public string UserName { get; set; }
+        // Evitar nulls inicializando con un valor por defecto
+        public string UserName { get; set; } = "Invitado";
 
         public PaginaPrincipalModel(
             SignInManager<ApplicationUser> signInManager,
@@ -21,21 +25,22 @@ namespace MUnder.Pages
             _userManager = userManager;
         }
 
+        // OnGetAsync: carga el nombre a mostrar
         public async Task OnGetAsync()
         {
-            // DEBUGGING
-            Console.WriteLine($"=== INDEX PAGE ===");
-            Console.WriteLine($"Usuario autenticado: {User.Identity.IsAuthenticated}");
-            Console.WriteLine($"Usuario nombre: {User.Identity.Name}");
+            // Debug (opcional)
+            Console.WriteLine("=== INDEX PAGE ===");
+            Console.WriteLine($"Usuario autenticado: {User.Identity?.IsAuthenticated}");
+            Console.WriteLine($"Usuario nombre: {User.Identity?.Name}");
 
             var user = await _userManager.GetUserAsync(User);
 
             if (user != null)
             {
                 Console.WriteLine($"Usuario encontrado: {user.Email}");
-                UserName = !string.IsNullOrEmpty(user.DisplayName)
+                UserName = !string.IsNullOrWhiteSpace(user.DisplayName)
                     ? user.DisplayName
-                    : user.Email;
+                    : (string.IsNullOrWhiteSpace(user.UserName) ? user.Email ?? "Usuario" : user.UserName);
             }
             else
             {
@@ -44,6 +49,7 @@ namespace MUnder.Pages
             }
         }
 
+        // OnPostAsync: logout — si tu form usa asp-page-handler="Logout" cámbialo a OnPostLogoutAsync
         public async Task<IActionResult> OnPostAsync()
         {
             await _signInManager.SignOutAsync();

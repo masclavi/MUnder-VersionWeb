@@ -18,6 +18,8 @@ namespace MUnder.Data
         public DbSet<PlaylistSong> PlaylistSongs { get; set; } = null!;
         public DbSet<Favorite> Favorites { get; set; } = null!;
 
+        public DbSet<Review> Reviews { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -59,6 +61,19 @@ namespace MUnder.Data
                 .HasOne(p => p.Owner)
                 .WithMany(u => u.Playlists)
                 .HasForeignKey(p => p.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // === Relación Review (muchos a muchos entre User y Song) ===
+            builder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Review>()
+                .HasOne(r => r.Song)
+                .WithMany(s => s.Reviews)
+                .HasForeignKey(r => r.SongId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

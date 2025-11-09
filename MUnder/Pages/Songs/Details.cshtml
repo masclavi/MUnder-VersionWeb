@@ -17,7 +17,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 40px auto;
             padding: 0 20px;
         }
@@ -43,6 +43,7 @@
             padding: 25px;
             border-radius: 10px;
             text-align: center;
+            margin-bottom: 30px;
         }
 
         .cover {
@@ -67,8 +68,122 @@
 
         .youtube-player {
             width: 100%;
-            aspect-ratio: 16 / 9;
-            margin-top: 15px;
+            max-width: 700px;
+            height: 394px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(147, 112, 219, 0.5);
+        }
+
+        /* === ESTILOS PARA RESEÑAS === */
+        .reviews-section {
+            background-color: #2D2838;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #444;
+        }
+
+        .average-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .average-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 1.2em;
+        }
+
+        .stars-display {
+            display: inline-block;
+        }
+
+        .star-filled {
+            color: #ffc107;
+        }
+
+        .star-empty {
+            color: #555;
+        }
+
+        .btn-review {
+            background-color: #9370DB;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+            .btn-review:hover {
+                background-color: #7B52C7;
+                color: white;
+            }
+
+        .review-item {
+            background-color: #1E1B26;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #9370DB;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-user {
+            font-weight: bold;
+            color: #9370DB;
+        }
+
+        .review-date {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .review-comment {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+
+        .review-count {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -76,16 +191,113 @@
     <div class="container">
         <a href="/Songs" class="btn-back">Volver a Explorar</a>
 
+        <!-- Detalles de la canción -->
         <div class="song-detail">
             <img src="@Model.Song.CoverPath" class="cover" onerror="this.src='/Imagenes/default-cover.png'" />
             <h2 class="title">@Model.Song.Title</h2>
             <p class="artist">@Model.Song.Artist</p>
+
             <iframe class="youtube-player"
                     src="@GetEmbedUrl(Model.Song.YouTubeUrl)"
                     frameborder="0"
                     allowfullscreen>
             </iframe>
         </div>
+
+        <!-- Sección de Reseñas -->
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <div>
+                    <h2 style="margin: 0;">
+                        <i class="bi bi-chat-left-text"></i> Reseñas
+                        <span class="review-count">(@Model.Reviews.Count)</span>
+                    </h2>
+                    @if (Model.Reviews.Any())
+                    {
+                        <div class="average-rating">
+                            <span class="average-number">@Model.AverageRating.ToString("0.0")</span>
+                            <div class="stars-display">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(Model.AverageRating))
+                                    {
+                                        <i class="bi bi-star-fill star-filled"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star star-empty"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (!Model.UserHasReviewed)
+                    {
+                        <a asp-page="/Reviews/Create" asp-route-songId="@Model.Song.Id" class="btn-review">
+                            <i class="bi bi-star"></i> Agregar Reseña
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="/Reviews/Create" asp-route-songId="@Model.Song.Id" class="btn-review">
+                            <i class="bi bi-pencil"></i> Editar mi Reseña
+                        </a>
+                    }
+                }
+                else
+                {
+                    <span style="opacity: 0.6;">Inicia sesión para reseñar</span>
+                }
+            </div>
+
+            <!-- Lista de Reseñas -->
+            @if (Model.Reviews.Any())
+            {
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-user">
+                                <i class="bi bi-person-circle"></i> @review.User.DisplayName
+                            </span>
+                            <span class="review-date">
+                                @review.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+                        </div>
+                        <div class="review-rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <p class="review-comment">@review.Comment</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-reviews">
+                    <i class="bi bi-chat-left-dots" style="font-size: 3em; opacity: 0.3;"></i>
+                    <p>No hay reseñas aún. ¡Sé el primero en compartir tu opinión!</p>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="reviews-section">
+        <h2>PRUEBA - Cantidad de reseñas: @Model.Reviews.Count</h2>
+        <p>Promedio: @Model.AverageRating</p>
+        <p>Usuario ha reseñado: @Model.UserHasReviewed</p>
     </div>
 </body>
 </html>

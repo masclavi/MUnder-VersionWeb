@@ -136,6 +136,10 @@
             background-color: #2D2838;
             border-radius: 10px;
         }
+
+        a.btn-reviews:hover {
+            background-color: #9370DB !important;
+        }
     </style>
 </head>
 <body>
@@ -162,7 +166,7 @@
                     <div class="song-info">
                         <h3 class="song-title">@song.Title</h3>
                         <p class="song-artist">@song.Artist</p>
-                        <iframe width="100%"
+                        <iframe width="100"
                                 height="80"
                                 src="@GetEmbedUrl(song.YouTubeUrl)"
                                 frameborder="0"
@@ -194,6 +198,11 @@
 
                         <a asp-page="Delete" asp-route-id="@song.Id"
                            style="background-color: #DC143C; color: white; padding: 6px 10px; border-radius: 4px; text-decoration: none; margin-left: 8px; font-weight: bold;">Eliminar</a>
+
+                        <a asp-page="./Details" asp-route-id="@song.Id"
+                        class="btn-reviews"
+                        style="background-color: #7B68EE; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background-color 0.2s ease; margin-left: 8px;">
+                        Ver reseñas </a>
                     </div>
                 </div>
             }
