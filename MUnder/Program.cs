@@ -46,6 +46,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Soporte para Razor Pages
 builder.Services.AddRazorPages();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 // Configuración de pipeline HTTP
@@ -65,6 +67,8 @@ app.UseAuthorization();
 
 // Rutas
 app.MapRazorPages();
+
+app.MapControllers();
 
 // Redirigir la raíz al login
 app.MapGet("/", () => Results.Redirect("/Login"));

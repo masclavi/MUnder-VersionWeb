@@ -26,6 +26,8 @@ namespace MUnder.Pages.Songs
         public double AverageRating { get; set; }
         public bool UserHasReviewed { get; set; }
 
+        public string CurrentUserId { get; set; } = string.Empty;
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             // Cargar la canción con sus reseñas
@@ -55,6 +57,36 @@ namespace MUnder.Pages.Songs
             {
                 var userId = _userManager.GetUserId(User);
                 UserHasReviewed = Reviews.Any(r => r.UserId == userId);
+            }
+
+            // Obtener la canción
+            Song = await _context.Songs
+                .Include(s => s.Album)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (Song == null)
+            {
+                return NotFound();
+            }
+
+            // Obtener todas las reviews de esta canción
+            Reviews = await _context.Reviews
+                .Include(r => r.User)
+                .Where(r => r.SongId == id)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            // Calcular promedio de rating
+            if (Reviews.Any())
+            {
+                AverageRating = Reviews.Average(r => r.Rating);
+            }
+
+            // Verificar si el usuario actual ya ha hecho review
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                CurrentUserId = _userManager.GetUserId(User) ?? string.Empty;
+                UserHasReviewed = Reviews.Any(r => r.UserId == CurrentUserId);
             }
 
             return Page();
