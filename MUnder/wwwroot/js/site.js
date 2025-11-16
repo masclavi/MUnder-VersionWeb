@@ -215,7 +215,11 @@ class RatingSystem {
                 this.existingComment = comment;
 
                 this.showToast(result.message, 'success');
-                this.render(); // Re-renderizar para actualizar botón
+
+                // Recargar página después de 1.5 segundos
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
             } else {
                 this.showToast(result.message || 'Error al guardar', 'error');
             }
@@ -224,7 +228,6 @@ class RatingSystem {
             this.showToast('Error de conexión', 'error');
         }
     }
-
     showToast(message, type = 'info') {
         let toast = document.getElementById('rating-toast');
         if (!toast) {

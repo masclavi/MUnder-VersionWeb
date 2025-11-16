@@ -11,20 +11,12 @@ namespace MUnder.Data
         {
         }
 
-<<<<<<< HEAD
-=======
-        // DbSets para tus entidades
->>>>>>> testAri
         public DbSet<Song> Songs { get; set; } = null!;
         public DbSet<Album> Albums { get; set; } = null!;
         public DbSet<Playlist> Playlists { get; set; } = null!;
         public DbSet<PlaylistSong> PlaylistSongs { get; set; } = null!;
         public DbSet<Favorite> Favorites { get; set; } = null!;
-<<<<<<< HEAD
-=======
-
         public DbSet<Review> Reviews { get; set; } = null!;
->>>>>>> testAri
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

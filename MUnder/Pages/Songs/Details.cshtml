@@ -40,10 +40,10 @@
             transition: all 0.3s;
         }
 
-            .btn-back:hover {
-                background-color: #666;
-                transform: translateY(-2px);
-            }
+        .btn-back:hover {
+            background-color: #666;
+            transform: translateY(-2px);
+        }
 
         .song-detail {
             background-color: #2D2838;
@@ -89,91 +89,10 @@
             text-decoration: none;
         }
 
-            .btn-play-popup:hover {
-                background-color: #7B4FBB;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(147, 112, 219, 0.5);
-            }
-
-        /* Modal de YouTube Popup */
-        .youtube-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-            .youtube-modal.show {
-                display: flex;
-            }
-
-        .youtube-modal-content {
-            position: relative;
-            width: 90%;
-            max-width: 900px;
-            background-color: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            animation: slideDown 0.3s ease;
-        }
-
-        .youtube-close {
-            position: absolute;
-            top: -40px;
-            right: 0;
-            background-color: #DC143C;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.5em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            z-index: 10000;
-        }
-
-            .youtube-close:hover {
-                background-color: #FF0000;
-                transform: scale(1.1);
-            }
-
-        .youtube-iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-        }
-
-        @@keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @@keyframes slideDown {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .btn-play-popup:hover {
+            background-color: #7B4FBB;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(147, 112, 219, 0.5);
         }
 
         /* === ESTILOS PARA RESEÑAS === */
@@ -277,18 +196,15 @@
         }
 
         @@media (max-width: 768px) {
-            .youtube-iframe {
-                height: 300px;
-            }
-
-            .youtube-modal-content {
-                width: 95%;
-            }
-
             .reviews-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
+            }
+
+            .cover {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
@@ -396,83 +312,60 @@
         </div>
     </div>
 
-    <!-- Modal de YouTube -->
-    <div id="youtube-modal" class="youtube-modal">
-        <div class="youtube-modal-content">
-            <button class="youtube-close" onclick="closeYouTubePopup()">×</button>
-            <iframe id="youtube-iframe" class="youtube-iframe" src="" allowfullscreen></iframe>
-        </div>
-    </div>
-
     <script src="~/js/site.js"></script>
     <script>
         // Variables globales
         const youtubeUrl = '@Model.Song.YouTubeUrl';
         const songId = @Model.Song.Id;
 
-        // Función para abrir popup de YouTube
+        // Función para abrir popup de YouTube REAL (ventana emergente)
         function openYouTubePopup() {
-            const modal = document.getElementById('youtube-modal');
-            const iframe = document.getElementById('youtube-iframe');
             const embedUrl = getEmbedUrl(youtubeUrl);
-
-            iframe.src = embedUrl + '?autoplay=1';
-            modal.classList.add('show');
-
-            // Prevenir scroll del body
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Función para cerrar popup de YouTube
-        function closeYouTubePopup() {
-            const modal = document.getElementById('youtube-modal');
-            const iframe = document.getElementById('youtube-iframe');
-
-            iframe.src = '';
-            modal.classList.remove('show');
-
-            // Restaurar scroll del body
-            document.body.style.overflow = 'auto';
-        }
-
-        // Cerrar con tecla ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeYouTubePopup();
+            
+            // Características de la ventana emergente
+            const width = 900;
+            const height = 550;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            const windowFeatures = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no';
+            
+            // Abrir ventana emergente con HTML personalizado
+            const popup = window.open('', 'YouTubePlayer', windowFeatures);
+            
+            if (popup) {
+                popup.document.write('<!DOCTYPE html><html><head><title>@Model.Song.Title - @Model.Song.Artist</title><style>body{margin:0;padding:0;background-color:#000;overflow:hidden}iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}</style></head><body><iframe src="' + embedUrl + '?autoplay=1" allowfullscreen></iframe></body></html>');
+                popup.document.close();
+                popup.focus();
+            } else {
+                alert('Por favor, permite las ventanas emergentes para reproducir el video.');
             }
-        });
-
-        // Cerrar al hacer clic fuera del video
-        document.getElementById('youtube-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeYouTubePopup();
-            }
-        });
+        }
 
         // Función para convertir URL de YouTube a embed
         function getEmbedUrl(url) {
             if (!url) return '';
-
+            
             let videoId = '';
-
+            
             if (url.includes('youtu.be/')) {
                 videoId = url.split('/').pop().split('?')[0];
             } else if (url.includes('youtube.com/watch')) {
                 const urlParams = new URLSearchParams(new URL(url).search);
                 videoId = urlParams.get('v');
             }
-
+            
             return 'https://www.youtube.com/embed/' + videoId;
         }
 
         // Inicializar sistema de valoraciones (solo si está autenticado)
         @if (User.Identity?.IsAuthenticated == true)
         {
-                <text>
-                document.addEventListener('DOMContentLoaded', function() {
-                    createRatingSystem(songId, 'rating-container-' + songId);
-                });
-                </text>
+            <text>
+            document.addEventListener('DOMContentLoaded', function() {
+                createRatingSystem(songId, 'rating-container-' + songId);
+            });
+            </text>
         }
     </script>
 </body>

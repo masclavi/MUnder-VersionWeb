@@ -25,41 +25,11 @@ namespace MUnder.Pages.Songs
         public List<Review> Reviews { get; set; } = new List<Review>();
         public double AverageRating { get; set; }
         public bool UserHasReviewed { get; set; }
-
         public string CurrentUserId { get; set; } = string.Empty;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            // Cargar la canción con sus reseñas
-            Song = await _context.Songs
-                .Include(s => s.Reviews)
-                    .ThenInclude(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (Song == null)
-            {
-                return NotFound();
-            }
-
-            // Obtener las reseñas ordenadas por fecha
-            Reviews = Song.Reviews
-                .OrderByDescending(r => r.CreatedAt)
-                .ToList();
-
-            // Calcular promedio de calificaciones
-            if (Reviews.Any())
-            {
-                AverageRating = Reviews.Average(r => r.Rating);
-            }
-
-            // Verificar si el usuario actual ya tiene una reseña
-            if (User.Identity.IsAuthenticated)
-            {
-                var userId = _userManager.GetUserId(User);
-                UserHasReviewed = Reviews.Any(r => r.UserId == userId);
-            }
-
-            // Obtener la canción
+            // Obtener la canción con su álbum
             Song = await _context.Songs
                 .Include(s => s.Album)
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -69,7 +39,7 @@ namespace MUnder.Pages.Songs
                 return NotFound();
             }
 
-            // Obtener todas las reviews de esta canción
+            // Obtener todas las reviews de esta canción con los usuarios
             Reviews = await _context.Reviews
                 .Include(r => r.User)
                 .Where(r => r.SongId == id)

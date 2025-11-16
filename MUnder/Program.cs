@@ -1,18 +1,10 @@
 using Microsoft.AspNetCore.Builder;
-<<<<<<< HEAD
-=======
 using Microsoft.AspNetCore.Identity;
->>>>>>> testAri
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MUnder.Data;
 using MUnder.Models;
-<<<<<<< HEAD
-using Microsoft.AspNetCore.Identity;
-
-=======
->>>>>>> testAri
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-<<<<<<< HEAD
-// Configuración de Identity
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = true;
-    // aquí podés ajustar políticas de contraseña, bloqueo, etc.
-})
-.AddEntityFrameworkStores<ApplicationDbContext>();
-=======
 // Configuración de Identity con ApplicationUser y IdentityRole
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -38,11 +21,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 4;
->>>>>>> testAri
-
     // Políticas de usuario
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedAccount = false; // Cambia a 'true' si usas confirmación por email
+    options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
@@ -64,6 +45,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Soporte para Razor Pages
 builder.Services.AddRazorPages();
 
+// Soporte para Controllers (API)
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -75,10 +57,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-<<<<<<< HEAD
-=======
 app.UseHttpsRedirection();
->>>>>>> testAri
 app.UseStaticFiles();
 app.UseRouting();
 
@@ -88,7 +67,6 @@ app.UseAuthorization();
 
 // Rutas
 app.MapRazorPages();
-
 app.MapControllers();
 
 // Redirigir la raíz al login
