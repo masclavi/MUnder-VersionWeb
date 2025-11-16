@@ -11,5 +11,8 @@ namespace MUnder.Models
         // Relaciones
         public ICollection<Playlist> Playlists { get; set; }
         public ICollection<Favorite> Favorites { get; set; }
+
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
     }
 }
