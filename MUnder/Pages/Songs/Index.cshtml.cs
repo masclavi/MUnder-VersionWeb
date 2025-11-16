@@ -22,6 +22,8 @@ namespace MUnder.Pages.Songs
         // Para búsqueda
         [BindProperty(SupportsGet = true)]
         public string? SearchTerm { get; set; }
+        public Dictionary<int, double> SongRatings { get; set; } = new Dictionary<int, double>();
+        public Dictionary<int, int> ReviewCounts { get; set; } = new Dictionary<int, int>();
 
         public async Task OnGetAsync()
         {
@@ -48,20 +50,59 @@ namespace MUnder.Pages.Songs
                     .Where(p => p.OwnerId == userId)
                     .ToListAsync();
             }
+            // Calcular promedios de ratings para cada canción
+            var songIds = Songs.Select(s => s.Id).ToList();
+
+            var reviewData = await _context.Reviews
+                .Where(r => songIds.Contains(r.SongId))
+                .GroupBy(r => r.SongId)
+                .Select(g => new
+                {
+                    SongId = g.Key,
+                    AverageRating = g.Average(r => r.Rating),
+                    ReviewCount = g.Count()
+                })
+                .ToListAsync();
+
+            SongRatings = reviewData.ToDictionary(x => x.SongId, x => x.AverageRating);
+            ReviewCounts = reviewData.ToDictionary(x => x.SongId, x => x.ReviewCount);
         }
 
         public async Task<IActionResult> OnPostAddFavoriteAsync(int songId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return RedirectToPage("/Login");
 
-            if (!await _context.Favorites.AnyAsync(f => f.UserId == userId && f.SongId == songId))
+            if (userId == null)
+            {
+                return new JsonResult(new { success = false, message = "Usuario no autenticado" })
+                {
+                    StatusCode = 401
+                };
+            }
+
+            // Verificar si la canción existe
+            var songExists = await _context.Songs.AnyAsync(s => s.Id == songId);
+            if (!songExists)
+            {
+                return new JsonResult(new { success = false, message = "Canción no encontrada" })
+                {
+                    StatusCode = 404
+                };
+            }
+
+            // Verificar si ya existe en favoritos
+            var existingFavorite = await _context.Favorites
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.SongId == songId);
+
+            if (existingFavorite == null)
             {
                 _context.Favorites.Add(new Favorite { UserId = userId, SongId = songId });
                 await _context.SaveChangesAsync();
+
+                return new JsonResult(new { success = true, message = "Añadido a favoritos" });
             }
 
-            return RedirectToPage(new { SearchTerm });
+            return new JsonResult(new { success = true, message = "Ya estaba en favoritos" });
         }
 
         public async Task<IActionResult> OnPostAddToPlaylistAsync(int songId, int playlistId)

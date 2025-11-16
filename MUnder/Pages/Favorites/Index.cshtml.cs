@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MUnder.Data;
 using MUnder.Models;
+using System.Security.Claims;
 
 namespace MUnder.Pages.Favorites
 {
@@ -23,12 +24,13 @@ namespace MUnder.Pages.Favorites
         public List<Song> FavoriteSongs { get; set; } = new List<Song>();
         public string UserName { get; set; } = string.Empty;
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task OnGetAsync()
         {
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                return RedirectToPage("/Login");
+                FavoriteSongs = new List<Song>();
+                return;
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -37,15 +39,41 @@ namespace MUnder.Pages.Favorites
                 UserName = !string.IsNullOrEmpty(user.DisplayName) ? user.DisplayName : user.Email ?? "Usuario";
             }
 
-            // Obtener canciones favoritas del usuario
             FavoriteSongs = await _context.Favorites
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Song)
                 .OrderByDescending(f => f.CreatedAt)
                 .Select(f => f.Song)
                 .ToListAsync();
+        }
 
-            return Page();
+        public async Task<IActionResult> OnPostRemoveFavoriteAsync(int songId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new JsonResult(new { success = false, message = "Usuario no autenticado" })
+                {
+                    StatusCode = 401
+                };
+            }
+
+            var favorite = await _context.Favorites
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.SongId == songId);
+
+            if (favorite != null)
+            {
+                _context.Favorites.Remove(favorite);
+                await _context.SaveChangesAsync();
+
+                return new JsonResult(new { success = true, isFavorite = false, message = "Eliminado de favoritos" });
+            }
+
+            return new JsonResult(new { success = false, message = "Favorito no encontrado" })
+            {
+                StatusCode = 404
+            };
         }
     }
 }

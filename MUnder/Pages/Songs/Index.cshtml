@@ -1,19 +1,28 @@
 ﻿@page
 @model MUnder.Pages.Songs.IndexModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "Explorar Música";
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
     <style>
-        body {
-            background-color: #1E1B26;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1E1B26;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            min-height: 100vh;
         }
 
         .container {
@@ -101,15 +110,52 @@
             margin: 5px 0;
         }
 
+        .song-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .stars-display {
+            color: #FFD700;
+            font-size: 1.1em;
+        }
+
+        .rating-number {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .review-count {
+            opacity: 0.7;
+            font-size: 0.85em;
+        }
+
+        .no-rating {
+            opacity: 0.5;
+            font-size: 0.85em;
+        }
+
         .btn-play-video {
             background-color: #9370DB;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-top: 8px;
+        }
+
+        .btn-play-video:hover {
+            background-color: #7B4FBB;
         }
 
         .actions {
@@ -152,8 +198,7 @@
             background-color: #9370DB !important;
         }
 
-        /* Toast simple */
-        .toast-fav {
+        .toast {
             position: fixed;
             bottom: 30px;
             right: 30px;
@@ -166,11 +211,11 @@
             z-index: 9999;
             font-size: 1.1em;
             font-weight: bold;
+            animation: slideIn 0.3s ease;
         }
 
-        .toast-fav.show {
+        .toast.show {
             display: block;
-            animation: slideIn 0.3s ease;
         }
 
         @@keyframes slideIn {
@@ -186,6 +231,7 @@
     </style>
 </head>
 <body>
+    @Html.AntiForgeryToken()
     <div class="container">
         <div class="header">
             <h2>🎧 Explorar Música</h2>
@@ -209,14 +255,47 @@
                     <div class="song-info">
                         <h3 class="song-title">@song.Title</h3>
                         <p class="song-artist">@song.Artist</p>
-                        <button class="btn-play-video" onclick="playVideo('@song.YouTubeUrl.Replace("'", "\\'")','@song.Title.Replace("'", "\\'")','@song.Artist.Replace("'", "\\'")')">
-                            ▶️ Reproducir
-                        </button>
+
+                        @if (Model.SongRatings.ContainsKey(song.Id))
+                        {
+                            var rating = Model.SongRatings[song.Id];
+                            var reviewCount = Model.ReviewCounts[song.Id];
+                            <div class="song-rating">
+                                <span class="stars-display">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(rating))
+                                        {
+                                            <span>★</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #555;">☆</span>
+                                        }
+                                    }
+                                </span>
+                                <span class="rating-number">@rating.ToString("0.0")</span>
+                                <span class="review-count">(@reviewCount reseña@(reviewCount != 1 ? "s" : ""))</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="song-rating">
+                                <span class="no-rating">Sin reseñas aún</span>
+                            </div>
+                        }
+
+                        <!-- Botón Reproducir -->
+                            <button class="btn-play-video" onclick="@($"openYouTubePopup({Json.Serialize(song.YouTubeUrl)}, {Json.Serialize(song.Title)}, {Json.Serialize(song.Artist)})")">
+                                <span>▶️</span>
+                                <span>Reproducir</span>
+                            </button>
                     </div>
                     <div class="actions">
-                        <form method="post" asp-page-handler="AddFavorite" asp-route-songId="@song.Id" onsubmit="showFavToast(); return true;">
-                            <button type="submit" class="btn-fav">❤️</button>
-                        </form>
+                        <!-- Botón Favoritos -->
+                        <button type="button" class="btn-fav" onclick="toggleFavorite(@song.Id)">
+                            ❤️
+                        </button>
 
                         @if (Model.UserPlaylists.Any())
                         {
@@ -255,51 +334,151 @@
         }
     </div>
 
-    <div id="toast-fav" class="toast-fav">❤️ Añadido a favoritos</div>
+    <div id="toast" class="toast">❤️ Añadido a favoritos</div>
 
     <script>
-        function playVideo(url, title, artist) {
-            var videoId = '';
-            if (url.indexOf('youtu.be/') > -1) {
-                videoId = url.split('/').pop().split('?')[0];
-            } else if (url.indexOf('youtube.com/watch') > -1) {
-                var match = url.match(/v=([^&]+)/);
-                if (match) videoId = match[1];
+        // Función para abrir popup de YouTube REAL (ventana emergente)
+        function openYouTubePopup(youtubeUrl, title, artist) {
+            // Verificar si se proporcionó la URL
+            if (!youtubeUrl || youtubeUrl.trim() === "") {
+                alert("No se encontró la URL del video de YouTube.");
+                return;
             }
-            
-            var embedUrl = 'https://www.youtube.com/embed/' + videoId;
-            var w = 900, h = 550;
-            var left = (screen.width - w) / 2;
-            var top = (screen.height - h) / 2;
-            var features = 'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no';
-            var popup = window.open('', 'YouTubePlayer', features);
+
+            // Convertir la URL de YouTube a formato embebido (embed)
+            const embedUrl = getEmbedUrl(youtubeUrl);
+
+            if (!embedUrl) {
+                alert("No se pudo generar la URL del video de YouTube.");
+                return;
+            }
+
+            // Características de la ventana emergente
+            const width = 900;
+            const height = 550;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+
+            const windowFeatures = 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no';
+
+            // Abrir ventana emergente con HTML personalizado
+            const popup = window.open('', 'YouTubePlayer', windowFeatures);
+
             if (popup) {
-                popup.document.write('<html><head><title>' + title + ' - ' + artist + '</title><style>body{margin:0;padding:0;background:#000;overflow:hidden}iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}</style></head><body><iframe src="' + embedUrl + '?autoplay=1" allowfullscreen></iframe></body></html>');
-                popup.document.close();
-                popup.focus();
+                // Escapar los valores de título y artista para usarlos en JavaScript
+                const escapedTitle = title.replace(/'/g, "\\'").replace(/"/g, '\\"');
+                const escapedArtist = artist.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+                // Escribir el HTML directamente en la ventana emergente
+                popup.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${escapedTitle} - ${escapedArtist}</title>
+                        <style>
+                            body { margin: 0; padding: 0; background-color: #000; overflow: hidden; }
+                            iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+                        </style>
+                    </head>
+                    <body>
+                        <iframe src="${embedUrl}?autoplay=1" allowfullscreen></iframe>
+                    </body>
+                    </html>
+                `);
+                popup.document.close(); // Importante: cerrar el documento para que se renderice
+                popup.focus(); // Enfocar la ventana emergente
             } else {
-                alert('Permite las ventanas emergentes.');
+                // Manejar el caso donde el navegador bloquea la ventana emergente
+                alert('Por favor, permite las ventanas emergentes para reproducir el video.');
             }
         }
 
-        function showFavToast() {
-            var toast = document.getElementById('toast-fav');
-            toast.classList.add('show');
-            setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3000);
+        // Función para convertir URL de YouTube a embed
+        function getEmbedUrl(url) {
+            if (!url) return '';
+
+            let videoId = '';
+
+            // Caso 1: URL corta como https://youtu.be/VIDEO_ID  
+            if (url.includes('youtu.be/')) {
+                videoId = url.split('/').pop().split('?')[0]; // Extraer ID, eliminar parámetros
+            }
+            // Caso 2: URL normal como https://www.youtube.com/watch?v=VIDEO_ID  
+            else if (url.includes('youtube.com/watch')) {
+                try {
+                    const urlObj = new URL(url);
+                    videoId = urlObj.searchParams.get('v'); // Extraer ID con URLSearchParams
+                } catch (e) {
+                    console.error('Error al parsear la URL de YouTube:', e);
+                    return ''; // Devolver cadena vacía si hay error
+                }
+            }
+
+            // Devolver la URL embebida si se encontró el ID
+            return videoId ? 'https://www.youtube.com/embed/' + videoId : '';
         }
+
+            async function toggleFavorite(songId) {
+                const button = event.target;
+                if (button) {
+                    button.disabled = true;
+                }
+
+                try {
+                    const response = await fetch(`/Songs?handler=AddFavorite&songId=${songId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Resultado:', result);
+                        showFavToast();
+            
+                        // Feedback visual en el botón
+                        if (button) {
+                            button.style.backgroundColor = '#FF1744';
+                            button.textContent = '❤️✓';
+                            setTimeout(() => {
+                                button.textContent = '❤️';
+                                button.style.backgroundColor = '#DC143C';
+                            }, 1000);
+                        }
+                    } else if (response.status === 401) {
+                        alert('Debes iniciar sesión para agregar favoritos');
+                        window.location.href = '/Login';
+                    } else if (response.status === 404) {
+                        alert('La canción no se encontró');
+                    } else {
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error('Error:', errorData);
+                        alert('Hubo un problema al agregar la canción a favoritos.');
+                    }
+                } catch (error) {
+                    console.error('Error de red:', error);
+                    alert('Hubo un problema de red. Por favor, inténtalo de nuevo.');
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                    }
+                }
+            }
+
+        // Función para mostrar el toast de favoritos (la dejamos por si acaso)
+        function showFavToast() {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        console.log('Página de música cargada');
     </script>
 </body>
 </html>
-
-@functions {
-    public string GetEmbedUrl(string url)
-    {
-        if (string.IsNullOrEmpty(url)) return "";
-        var id = url.Contains("youtu.be/")
-            ? url.Split('/').Last().Split('?')[0]
-            : System.Text.RegularExpressions.Regex.Match(url, @"v=([^&]+)").Groups[1].Value;
-        return $"https://www.youtube.com/embed/{id}";
-    }
-}
