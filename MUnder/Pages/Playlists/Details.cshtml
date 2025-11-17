@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = $"Playlist: {Model.Playlist.Name}";
 }
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,6 +44,44 @@
             margin-bottom: 25px;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.95em;
+            transition: opacity 0.3s;
+        }
+
+            .btn-action:hover {
+                opacity: 0.9;
+            }
+
+        .btn-add {
+            background-color: #9370DB;
+            color: white;
+        }
+
+        .btn-explore {
+            background-color: #6A5ACD;
+            color: white;
+        }
+
+        .btn-delete-playlist {
+            background-color: #DC143C;
+            color: white;
+        }
+
         .playlist-name {
             color: #9370DB;
             font-size: 1.6em;
@@ -63,15 +100,22 @@
             margin-bottom: 15px;
             display: flex;
             align-items: flex-start;
+            justify-content: space-between;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .song-card-content {
+            display: flex;
+            flex: 1;
+            gap: 15px;
         }
 
         .cover {
             width: 60px;
             height: 60px;
             border-radius: 5px;
-            margin-right: 15px;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .song-info {
@@ -93,16 +137,51 @@
             width: 100%;
             height: 80px;
         }
+
+        .song-actions {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            flex-shrink: 0;
+        }
+
+        .btn-remove {
+            background-color: #DC143C;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: opacity 0.3s;
+        }
+
+            .btn-remove:hover {
+                opacity: 0.9;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            background-color: #2D2838;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="/Playlists" class="btn-back">← Volver a Mis Playlists</a>
-
         <div class="playlist-header">
             <h2 class="playlist-name">@Model.Playlist.Name</h2>
             <p class="playlist-desc">@Model.Playlist.Description</p>
             <p>Canciones: @(Model.Playlist.PlaylistSongs?.Count ?? 0)</p>
+            <div class="header-actions">
+                <a href="/Songs" class="btn-action btn-explore">🔍 Explorar Canciones</a>
+                <form method="post" style="display: inline;" onsubmit="return confirm('¿Estás seguro que deseas eliminar esta playlist?');">
+                    <button type="submit" asp-page-handler="DeletePlaylist" class="btn-action btn-delete-playlist">Eliminar Playlist</button>
+                </form>
+            </div>
         </div>
 
         @if (Model.Playlist.PlaylistSongs != null && Model.Playlist.PlaylistSongs.Any())
@@ -110,29 +189,37 @@
             @foreach (var ps in Model.Playlist.PlaylistSongs)
             {
                 <div class="song-card">
-                    <img src="@ps.Song.CoverPath" class="cover" onerror="this.src='/Imagenes/default-cover.png'" />
-                    <div class="song-info">
-                        <h3 class="song-title">@ps.Song.Title</h3>
-                        <p class="song-artist">@ps.Song.Artist</p>
-                        <iframe class="youtube-player"
-                                src="@GetEmbedUrl(ps.Song.YouTubeUrl)"
-                                frameborder="0"
-                                allowfullscreen>
-                        </iframe>
+                    <div class="song-card-content">
+                        <img src="@ps.Song.CoverPath" class="cover" onerror="this.src='/Imagenes/default-cover.png'" />
+                        <div class="song-info">
+                            <h3 class="song-title">@ps.Song.Title</h3>
+                            <p class="song-artist">@ps.Song.Artist</p>
+                            <iframe class="youtube-player"
+                                    src="@GetEmbedUrl(ps.Song.YouTubeUrl)"
+                                    frameborder="0"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                    <div class="song-actions">
+                        <form method="post" style="display: inline;" onsubmit="return confirm('¿Deseas eliminar esta canción de la playlist?');">
+                            <input type="hidden" name="songId" value="@ps.Song.Id" />
+                            <input type="hidden" name="playlistId" value="@Model.Playlist.Id" />
+                            <button type="submit" asp-page-handler="RemoveSong" class="btn-remove">✕ Eliminar</button>
+                        </form>
                     </div>
                 </div>
             }
         }
         else
         {
-            <div style="text-align: center; padding: 30px; background-color: #2D2838; border-radius: 10px;">
-                <p>Esta playlist está vacía.</p>
+            <div class="empty-state">
+                <p>Esta playlist está vacía. <a href="/Songs" style="color: #9370DB; text-decoration: underline;">¡Agrega tu primera canción!</a></p>
             </div>
         }
     </div>
 </body>
 </html>
-
 @functions {
     public string GetEmbedUrl(string url)
     {
